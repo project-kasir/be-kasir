@@ -20,11 +20,21 @@ enum UserRole {
 
 model User {
   id       String   @id @default(cuid())
-  /// @zod.string.min(3).max(15)
   username String   @unique @db.VarChar(15)
-  /// @zod.string.min(8).max(255)
   password String   @db.VarChar(255)
   role     UserRole @default(MEMBER)
 
   @@map("users")
+}
+
+model Category {
+  id        String  @id @default(cuid())
+  parent_id String?
+  name      String  @unique
+
+  parent_category Category? @relation("CategoryToParent", fields: [parent_id], references: [id])
+
+  sub_categories Category[] @relation("CategoryToParent")
+
+  @@map("categories")
 }
