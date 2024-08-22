@@ -6,7 +6,7 @@ class UserPayload {
   token!: string;
 }
 
-export class RegisterResponse extends BaseResponse<UserPayload> {
+export class RegisterResponse extends BaseResponse<UserPayload, string> {
   @ApiProperty({ type: UserPayload })
   payload!: UserPayload;
 }

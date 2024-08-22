@@ -12,8 +12,8 @@ import { UserRole } from "@prisma/client";
 
 import { PrismaService } from "src/common/prisma/prisma.service";
 import { ValidationService } from "src/common/validation/validation.service";
-import { LoginUserDto, RegisterUserDto } from "./dto";
 import { UsersValidation } from "./zod";
+import { LoginUserDto, RegisterUserDto } from "./dto";
 
 @Injectable()
 export class AuthService {
@@ -97,5 +97,12 @@ export class AuthService {
         role: user.role,
       }),
     };
+  }
+
+  async getCurrent(userId: string) {
+    return await this.prismaService.user.findUnique({
+      where: { id: userId },
+      select: { id: true, username: true, role: true },
+    });
   }
 }
