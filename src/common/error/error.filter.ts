@@ -2,6 +2,7 @@ import {
   ArgumentsHost,
   Catch,
   ExceptionFilter,
+  Logger,
   NotFoundException,
 } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
@@ -12,7 +13,7 @@ import { Response } from "express";
 export class ErrorFilter implements ExceptionFilter {
   catch(exception: any, host: ArgumentsHost) {
     const response = host.switchToHttp().getResponse();
-    console.log(exception);
+    Logger.log(exception);
 
     switch (true) {
       case exception instanceof NotFoundException:
