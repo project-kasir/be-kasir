@@ -2,7 +2,7 @@ import { ApiProperty } from "@nestjs/swagger";
 import { BaseResponse } from "../../common/response/base-response";
 
 class UserPayload {
-  @ApiProperty({ type: "string" })
+  @ApiProperty({ type: String })
   token!: string;
 }
 

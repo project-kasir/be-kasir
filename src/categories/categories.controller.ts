@@ -24,7 +24,7 @@ import { ValidationService } from "src/common/validation/validation.service";
 import { CategoryValidation } from "./zod";
 import { Public } from "src/common/decorators/public.decorator";
 import { CategoryResponse } from "./response";
-import { BaseResponse } from "src/common/response/base-response";
+import { SuccessResponse } from "src/common/response/base-response";
 
 @ApiTags("Categories")
 @Controller("/v1/categories")
@@ -37,8 +37,8 @@ export class CategoriesController {
 
   @HttpCode(201)
   @ApiBearerAuth()
-  @Roles([USER_ROLES.ADMIN])
   @ApiOperation({ summary: "Authorization Required" })
+  @Roles([USER_ROLES.ADMIN])
   @ApiBody({ type: CreateCategoryDto })
   @ApiOkResponse({ type: CategoryResponse })
   @Post()
@@ -71,28 +71,32 @@ export class CategoriesController {
 
   @HttpCode(200)
   @ApiBearerAuth()
-  @Roles([USER_ROLES.ADMIN])
   @ApiOperation({ summary: "Authorization Required" })
+  @Roles([USER_ROLES.ADMIN])
   @ApiBody({ type: UpdateCategoryDto })
   @ApiOkResponse({ type: CategoryResponse })
   @Patch(":id")
-  update(
+  async update(
     @Param("id") id: string,
     @Body() updateCategoryDto: UpdateCategoryDto,
   ) {
     updateCategoryDto.id = id;
-    const res = this.categoriesService.update(updateCategoryDto);
+    this.validationService.validate(
+      CategoryValidation.UPDATE,
+      updateCategoryDto,
+    );
+    const res = await this.categoriesService.update(updateCategoryDto);
     return this.responseService.success(200, "Update category success", res);
   }
 
   @HttpCode(200)
   @ApiBearerAuth()
-  @Roles([USER_ROLES.ADMIN])
   @ApiOperation({ summary: "Authorization Required" })
-  @ApiOkResponse({ type: BaseResponse<null, string> })
+  @Roles([USER_ROLES.ADMIN])
+  @ApiOkResponse({ type: SuccessResponse })
   @Delete(":id")
-  delete(@Param("id") id: string) {
-    const res = this.categoriesService.delete(id);
+  async delete(@Param("id") id: string) {
+    const res = await this.categoriesService.delete(id);
     return this.responseService.success(200, "Delete category success", res);
   }
 }

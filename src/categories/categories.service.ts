@@ -1,10 +1,10 @@
+import { Category } from "@prisma/client";
 import { Logger } from "winston";
 import { WINSTON_MODULE_PROVIDER } from "nest-winston";
 import { Inject, Injectable, NotFoundException } from "@nestjs/common";
 
 import { CreateCategoryDto, UpdateCategoryDto } from "./dto";
 import { PrismaService } from "src/common/prisma/prisma.service";
-import { Category } from "@prisma/client";
 
 @Injectable()
 export class CategoriesService {
@@ -14,17 +14,13 @@ export class CategoriesService {
   ) {}
 
   async create(createCategoryDto: CreateCategoryDto) {
-    return await this.prismaService.category.create({
-      data: {
-        name: createCategoryDto.name,
-        parent_id: createCategoryDto.parent_id,
-      },
-      select: {
-        id: true,
-        parent_id: true,
-        name: true,
-      },
+    const category = await this.prismaService.category.create({
+      data: createCategoryDto,
     });
+
+    this.logger.info(`Category ${createCategoryDto.name} created successfully`);
+
+    return category;
   }
 
   async getAll() {
@@ -66,10 +62,7 @@ export class CategoriesService {
       updateCategoryDto.id,
     )) as Category;
 
-    const updateData: Partial<{
-      name: string;
-      parent_id: string | null;
-    }> = {};
+    const updateData: Partial<Category> = {};
 
     if (updateCategoryDto.name) {
       updateData.name = updateCategoryDto.name;
@@ -81,15 +74,12 @@ export class CategoriesService {
 
     this.logger.info(`Update Category: ${existingCategory.name}`);
 
-    return await this.prismaService.category.update({
+    const updatedCategory = await this.prismaService.category.update({
       where: { id: existingCategory.id },
       data: updateData,
-      select: {
-        id: true,
-        name: true,
-        parent_id: true,
-      },
     });
+
+    return updatedCategory;
   }
 
   async delete(id: string) {
@@ -103,6 +93,6 @@ export class CategoriesService {
       where: { id },
     });
 
-    return { message: `Category with id ${id} has been deleted` };
+    return `Category with id ${id} has been deleted`;
   }
 }
