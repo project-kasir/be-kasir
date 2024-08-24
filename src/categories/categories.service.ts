@@ -1,10 +1,11 @@
 import { Logger } from "winston";
+import { Category } from "@prisma/client";
 import { WINSTON_MODULE_PROVIDER } from "nest-winston";
 import { Inject, Injectable, NotFoundException } from "@nestjs/common";
 
 import { CreateCategoryDto, UpdateCategoryDto } from "./dto";
-import { PrismaService } from "src/common/prisma/prisma.service";
-import { Category } from "@prisma/client";
+import { PrismaService } from "../common/prisma/prisma.service";
+import { CreateCategoryResponse, UpdateCategoryResponse } from "./response";
 
 @Injectable()
 export class CategoriesService {
@@ -13,7 +14,9 @@ export class CategoriesService {
     private readonly prismaService: PrismaService,
   ) {}
 
-  async create(createCategoryDto: CreateCategoryDto) {
+  async create(
+    createCategoryDto: CreateCategoryDto,
+  ): Promise<CreateCategoryResponse> {
     const category = await this.prismaService.category.create({
       data: createCategoryDto,
     });
@@ -23,7 +26,7 @@ export class CategoriesService {
     return category;
   }
 
-  async getAll() {
+  async getAll(): Promise<Category[]> {
     const categories = await this.prismaService.category.findMany();
 
     const categoryMap = new Map<string, any>();
@@ -51,13 +54,15 @@ export class CategoriesService {
     return rootCategories;
   }
 
-  async getById(id: string) {
-    return await this.prismaService.category.findUnique({
+  async getById(id: string): Promise<Category> {
+    return (await this.prismaService.category.findUnique({
       where: { id },
-    });
+    })) as Category;
   }
 
-  async update(updateCategoryDto: UpdateCategoryDto) {
+  async update(
+    updateCategoryDto: UpdateCategoryDto,
+  ): Promise<UpdateCategoryResponse> {
     const existingCategory = (await this.getById(
       updateCategoryDto.id,
     )) as Category;
@@ -85,7 +90,7 @@ export class CategoriesService {
     return updatedCategory;
   }
 
-  async delete(id: string) {
+  async delete(id: string): Promise<string> {
     const category = await this.getById(id);
 
     if (!category) {

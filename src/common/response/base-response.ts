@@ -1,17 +1,20 @@
 import { ApiProperty } from "@nestjs/swagger";
+import { PaginationResponse } from "../types";
 
-export abstract class BaseResponse<T> {
-  @ApiProperty({ type: "number", example: 200 })
+export abstract class WebSuccessResponse<T> {
+  @ApiProperty({ type: Number, example: 200 })
   code!: number;
 
   @ApiProperty()
   payload!: T;
 }
 
-export class SuccessResponse {
-  @ApiProperty({ type: "number", example: 200 })
-  code!: number;
+export abstract class WebPaginationResponse<T> extends WebSuccessResponse<T> {
+  @ApiProperty({ type: PaginationResponse })
+  meta!: PaginationResponse;
+}
 
+export abstract class PayloadStringResponse extends WebSuccessResponse<string> {
   @ApiProperty({ type: String, example: "success" })
   payload!: string;
 }

@@ -10,10 +10,12 @@ import { WINSTON_MODULE_PROVIDER } from "nest-winston";
 import { JwtService } from "@nestjs/jwt";
 import { UserRole } from "@prisma/client";
 
-import { PrismaService } from "src/common/prisma/prisma.service";
-import { ValidationService } from "src/common/validation/validation.service";
+import { PrismaService } from "../common/prisma/prisma.service";
+import { ValidationService } from "../common/validation/validation.service";
+import { GetCurrentUserResponse } from "../users/response";
 import { UsersValidation } from "./zod";
 import { LoginUserDto, RegisterUserDto } from "./dto";
+import { LoginResponse, RegisterResponse } from "./response";
 
 @Injectable()
 export class AuthService {
@@ -24,7 +26,7 @@ export class AuthService {
     private readonly validationService: ValidationService,
   ) {}
 
-  async register(data: RegisterUserDto) {
+  async register(data: RegisterUserDto): Promise<RegisterResponse> {
     const registerUser = this.validationService.validate(
       UsersValidation.RESGISTER,
       data,
@@ -67,7 +69,7 @@ export class AuthService {
     };
   }
 
-  async login(data: LoginUserDto) {
+  async login(data: LoginUserDto): Promise<LoginResponse> {
     const loginUser = this.validationService.validate(
       UsersValidation.LOGIN,
       data,
@@ -99,7 +101,7 @@ export class AuthService {
     };
   }
 
-  async getCurrent(userId: string) {
+  async getCurrent(userId: string): Promise<GetCurrentUserResponse | null> {
     return await this.prismaService.user.findUnique({
       where: { id: userId },
       select: { id: true, username: true, role: true },

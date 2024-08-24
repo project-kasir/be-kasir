@@ -1,18 +1,14 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { BaseResponse } from "../../common/response/base-response";
 
-class SupplierPayload {
+export class CreateSupplierResponse {
   @ApiProperty({ type: String })
   id!: string;
 
   @ApiProperty({ type: String })
   name!: string;
 
-  @ApiProperty({ type: String })
-  phone!: string;
+  @ApiProperty({ type: Number })
+  phone!: number;
 }
 
-export class SupplierResponse extends BaseResponse<SupplierPayload> {
-  @ApiProperty({ type: SupplierPayload })
-  payload!: SupplierPayload;
-}
+export class UpdateSupplierResponse extends CreateSupplierResponse {}

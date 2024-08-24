@@ -1,18 +1,14 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { BaseResponse } from "../../common/response/base-response";
 
-class CategoryPayload {
+export class CreateCategoryResponse {
   @ApiProperty({ type: String })
   id!: string;
 
-  @ApiProperty({ type: String })
-  parent_id?: string;
+  @ApiProperty({ type: String, nullable: true })
+  parent_id?: string | null;
 
   @ApiProperty({ type: String })
   name!: string;
 }
 
-export class CategoryResponse extends BaseResponse<CategoryPayload> {
-  @ApiProperty({ type: CategoryPayload })
-  payload!: CategoryPayload;
-}
+export class UpdateCategoryResponse extends CreateCategoryResponse {}

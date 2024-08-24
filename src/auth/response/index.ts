@@ -1,14 +1,9 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { BaseResponse } from "../../common/response/base-response";
 
-class UserPayload {
+
+export class RegisterResponse  {
   @ApiProperty({ type: String })
   token!: string;
-}
-
-export class RegisterResponse extends BaseResponse<UserPayload> {
-  @ApiProperty({ type: UserPayload })
-  payload!: UserPayload;
 }
 
 export class LoginResponse extends RegisterResponse {}

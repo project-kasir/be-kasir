@@ -19,11 +19,6 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "resolveJsonModule": true,
-    "types": ["node", "@types/jest"],
-    "paths": {
-      "src/*": ["./src/*"],
-      "prisma/*": ["./prisma/*"],
-      "test/*": ["./test/*"]
-    }
+    "types": ["node", "@types/jest"]
   }
 }

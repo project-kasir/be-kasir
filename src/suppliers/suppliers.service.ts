@@ -1,11 +1,12 @@
-import { Supplier } from "@prisma/client";
+import { Logger } from "winston";
+import { Prisma, Supplier } from "@prisma/client";
 import { Inject, Injectable, NotFoundException } from "@nestjs/common";
 import { WINSTON_MODULE_PROVIDER } from "nest-winston";
 
 import { CreateSupplierDto, UpdateSupplierDto } from "./dto";
-import { PrismaService } from "src/common/prisma/prisma.service";
-import { PaginationReq } from "src/common/types";
-import { Logger } from "winston";
+import { PrismaService } from "../common/prisma/prisma.service";
+import { PaginationReq, WithPagiation } from "../common/types";
+import { CreateSupplierResponse, UpdateSupplierResponse } from "./response";
 
 @Injectable()
 export class SuppliersService {
@@ -14,7 +15,9 @@ export class SuppliersService {
     private readonly prismaService: PrismaService,
   ) {}
 
-  async create(createSupplierDto: CreateSupplierDto): Promise<Supplier> {
+  async create(
+    createSupplierDto: CreateSupplierDto,
+  ): Promise<CreateSupplierResponse> {
     const supplier = await this.prismaService.supplier.create({
       data: createSupplierDto,
     });
@@ -24,7 +27,9 @@ export class SuppliersService {
     return supplier;
   }
 
-  async getAll(paginationReq: PaginationReq) {
+  async getAll(
+    paginationReq: PaginationReq,
+  ): Promise<WithPagiation<Supplier[]>> {
     const skip = (paginationReq.page - 1) * paginationReq.size;
 
     const [payload, total] = await this.prismaService.$transaction([
@@ -51,7 +56,9 @@ export class SuppliersService {
     };
   }
 
-  async getById(id: string) {
+  async getById(
+    id: string,
+  ): Promise<Prisma.SupplierGetPayload<{ include: { brands: true } }> | null> {
     return this.prismaService.supplier.findUnique({
       where: { id },
       include: {
@@ -60,7 +67,9 @@ export class SuppliersService {
     });
   }
 
-  async update(updateSupplierDto: UpdateSupplierDto) {
+  async update(
+    updateSupplierDto: UpdateSupplierDto,
+  ): Promise<UpdateSupplierResponse> {
     const existingSupplier = (await this.getById(
       updateSupplierDto.id,
     )) as Supplier;
@@ -85,7 +94,7 @@ export class SuppliersService {
     return updatedSupplier;
   }
 
-  async delete(id: string) {
+  async delete(id: string): Promise<string> {
     const supplier = await this.getById(id);
 
     if (!supplier) {
