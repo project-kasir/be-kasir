@@ -20,6 +20,6 @@ export class UsersController {
   @Post("/current")
   async current(@CurrentUser() user: UserClaims) {
     const res = await this.authService.getCurrent(user.id);
-    return this.responseService.success(200, "Success", res);
+    return this.responseService.success(200, res);
   }
 }

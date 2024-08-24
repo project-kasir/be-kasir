@@ -12,12 +12,12 @@ import { Response } from "express";
 @Catch(ZodError, Prisma.PrismaClientKnownRequestError, NotFoundException)
 export class ErrorFilter implements ExceptionFilter {
   catch(exception: any, host: ArgumentsHost) {
-    const response = host.switchToHttp().getResponse();
+    const response = host.switchToHttp().getResponse<Response>();
     Logger.log(exception);
 
     switch (true) {
       case exception instanceof NotFoundException:
-        response.status(400).json({
+        response.status(404).json({
           errors: "Not found",
           message: "Page not found",
           status_code: 404,
@@ -25,7 +25,7 @@ export class ErrorFilter implements ExceptionFilter {
         break;
       case exception instanceof ZodError:
         response.status(400).json({
-          errors: exception,
+          errors: exception.errors,
           message: "Validation error",
           status_code: 400,
         });
@@ -56,7 +56,7 @@ export class ErrorFilter implements ExceptionFilter {
       P2003: {
         errors:
           "Cannot delete or update a parent row: a foreign key constraint fails.",
-        message: "Database error",
+        message: "Foreign key constraint error",
         status_code: 400,
       },
     };
@@ -66,6 +66,6 @@ export class ErrorFilter implements ExceptionFilter {
       status_code: 500,
     };
 
-    response.status(errorResponse.statusCode).json(errorResponse);
+    response.status(errorResponse.status_code).json(errorResponse);
   }
 }

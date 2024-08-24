@@ -33,9 +33,27 @@ model Category {
   parent_id String?
   name      String  @unique
 
-  parent_category Category? @relation("CategoryToParent", fields: [parent_id], references: [id])
+  parent_category Category? @relation("CategoryToParent", fields: [parent_id], references: [id], onUpdate: Cascade, onDelete: Restrict)
 
   sub_categories Category[] @relation("CategoryToParent")
 
   @@map("categories")
+}
+
+model Supplier {
+  id     String  @id @default(cuid())
+  name   String  @unique
+  phone  Int
+  brands Brand[]
+
+  @@map("suppliers")
+}
+
+model Brand {
+  id          String   @id @default(cuid())
+  name        String
+  supplier_id String
+  supplier    Supplier @relation(fields: [supplier_id], references: [id])
+
+  @@map("brands")
 }

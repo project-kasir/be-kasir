@@ -14,8 +14,8 @@ import {
   ApiBearerAuth,
   ApiBody,
   ApiOkResponse,
-  ApiOperation,
   ApiTags,
+  OmitType,
 } from "@nestjs/swagger";
 import { ResponseService } from "src/common/response/response.service";
 import { Roles } from "src/common/decorators/roles.decorator";
@@ -24,7 +24,7 @@ import { ValidationService } from "src/common/validation/validation.service";
 import { CategoryValidation } from "./zod";
 import { Public } from "src/common/decorators/public.decorator";
 import { CategoryResponse } from "./response";
-import { BaseResponse } from "src/common/response/base-response";
+import { SuccessResponse } from "src/common/response/base-response";
 
 @ApiTags("Categories")
 @Controller("/v1/categories")
@@ -38,7 +38,6 @@ export class CategoriesController {
   @HttpCode(201)
   @ApiBearerAuth()
   @Roles([USER_ROLES.ADMIN])
-  @ApiOperation({ summary: "Authorization Required" })
   @ApiBody({ type: CreateCategoryDto })
   @ApiOkResponse({ type: CategoryResponse })
   @Post()
@@ -48,7 +47,7 @@ export class CategoriesController {
       createCategoryDto,
     );
     const res = await this.categoriesService.create(createCategoryDto);
-    return this.responseService.success(201, "Create category success", res);
+    return this.responseService.success(201, res);
   }
 
   @HttpCode(200)
@@ -57,7 +56,7 @@ export class CategoriesController {
   @Get()
   async getAll() {
     const res = await this.categoriesService.getAll();
-    return this.responseService.success(200, "Get all categories", res);
+    return this.responseService.success(200, res);
   }
 
   @HttpCode(200)
@@ -66,33 +65,35 @@ export class CategoriesController {
   @Get(":id")
   async getById(@Param("id") id: string) {
     const res = await this.categoriesService.getById(id);
-    return this.responseService.success(200, "Get category success", res);
+    return this.responseService.success(200, res);
   }
 
   @HttpCode(200)
   @ApiBearerAuth()
   @Roles([USER_ROLES.ADMIN])
-  @ApiOperation({ summary: "Authorization Required" })
-  @ApiBody({ type: UpdateCategoryDto })
+  @ApiBody({ type: OmitType(UpdateCategoryDto, ["id"]) })
   @ApiOkResponse({ type: CategoryResponse })
   @Patch(":id")
-  update(
+  async update(
     @Param("id") id: string,
     @Body() updateCategoryDto: UpdateCategoryDto,
   ) {
     updateCategoryDto.id = id;
-    const res = this.categoriesService.update(updateCategoryDto);
-    return this.responseService.success(200, "Update category success", res);
+    this.validationService.validate(
+      CategoryValidation.UPDATE,
+      updateCategoryDto,
+    );
+    const res = await this.categoriesService.update(updateCategoryDto);
+    return this.responseService.success(200, res);
   }
 
   @HttpCode(200)
   @ApiBearerAuth()
   @Roles([USER_ROLES.ADMIN])
-  @ApiOperation({ summary: "Authorization Required" })
-  @ApiOkResponse({ type: BaseResponse<null, string> })
+  @ApiOkResponse({ type: SuccessResponse })
   @Delete(":id")
-  delete(@Param("id") id: string) {
-    const res = this.categoriesService.delete(id);
-    return this.responseService.success(200, "Delete category success", res);
+  async delete(@Param("id") id: string) {
+    const res = await this.categoriesService.delete(id);
+    return this.responseService.success(200, res);
   }
 }

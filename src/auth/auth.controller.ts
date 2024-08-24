@@ -22,7 +22,7 @@ export class AuthController {
   @Post("/register")
   async register(@Body() loginReq: RegisterUserDto) {
     const res = await this.authService.register(loginReq);
-    return this.responseService.success(201, "Register success", res);
+    return this.responseService.success(201, res);
   }
 
   @HttpCode(200)
@@ -32,6 +32,6 @@ export class AuthController {
   @Post("/login")
   async login(@Body() loginReq: LoginUserDto) {
     const res = await this.authService.login(loginReq);
-    return this.responseService.success(200, "Login success", res);
+    return this.responseService.success(200, res);
   }
 }
