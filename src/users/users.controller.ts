@@ -1,10 +1,10 @@
 import { Controller, HttpCode, Post } from "@nestjs/common";
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from "@nestjs/swagger";
 import { GetCurrentUserResponse } from "./response";
-import { CurrentUser } from "src/common/decorators/current-user.decorator";
-import { UserClaims } from "src/common/types";
-import { AuthService } from "src/auth/auth.service";
-import { ResponseService } from "src/common/response/response.service";
+import { CurrentUser } from "../common/decorators/current-user.decorator";
+import { UserClaims } from "../common/types";
+import { AuthService } from "../auth/auth.service";
+import { ResponseService } from "../common/response/response.service";
 
 @ApiTags("Users")
 @Controller("/v1/users")

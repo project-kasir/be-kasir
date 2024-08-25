@@ -3,7 +3,7 @@ import { Category } from "@prisma/client";
 import { WINSTON_MODULE_PROVIDER } from "nest-winston";
 import { Inject, Injectable, NotFoundException } from "@nestjs/common";
 
-import { CreateCategoryDto, UpdateCategoryDto } from "./dto";
+import { CategoryDto, CreateCategoryDto, UpdateCategoryDto } from "./dto";
 import { PrismaService } from "../common/prisma/prisma.service";
 import { CreateCategoryResponse, UpdateCategoryResponse } from "./response";
 
@@ -26,7 +26,7 @@ export class CategoriesService {
     return category;
   }
 
-  async getAll(): Promise<Category[]> {
+  async getAll(): Promise<CategoryDto[]> {
     const categories = await this.prismaService.category.findMany();
 
     const categoryMap = new Map<string, any>();
@@ -38,7 +38,7 @@ export class CategoriesService {
       });
     });
 
-    const rootCategories: Category[] = [];
+    const rootCategories: CategoryDto[] = [];
 
     categoryMap.forEach((category) => {
       if (category.parent_id) {
@@ -54,10 +54,16 @@ export class CategoriesService {
     return rootCategories;
   }
 
-  async getById(id: string): Promise<Category> {
-    return (await this.prismaService.category.findUnique({
+  async getById(id: string): Promise<CategoryDto> {
+    const category = await this.prismaService.category.findUnique({
       where: { id },
-    })) as Category;
+    });
+
+    if (!category) {
+      throw new NotFoundException(`Category with id ${id} not found`);
+    }
+
+    return category;
   }
 
   async update(

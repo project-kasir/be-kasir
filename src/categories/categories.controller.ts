@@ -8,10 +8,6 @@ import {
   Delete,
   HttpCode,
 } from "@nestjs/common";
-import { Category } from "@prisma/client";
-
-import { CategoriesService } from "./categories.service";
-import { CreateCategoryDto, UpdateCategoryDto } from "./dto";
 import {
   ApiBearerAuth,
   ApiBody,
@@ -19,14 +15,22 @@ import {
   ApiTags,
   OmitType,
 } from "@nestjs/swagger";
+
+import { CategoriesService } from "./categories.service";
+import { CreateCategoryDto, UpdateCategoryDto } from "./dto";
 import { ResponseService } from "../common/response/response.service";
 import { Roles } from "../common/decorators/roles.decorator";
 import { USER_ROLES } from "../common/types";
 import { ValidationService } from "../common/validation/validation.service";
 import { CategoryValidation } from "./zod";
 import { Public } from "../common/decorators/public.decorator";
-import { WebSuccessResponse } from "../common/response/base-response";
-import { CreateCategoryResponse, UpdateCategoryResponse } from "./response";
+import { WebPayloadStringResponse } from "../common/response/base-response";
+import {
+  WebCreateCategoryResponse,
+  WebGetAllCategoriesResponse,
+  WebGetCategoryByIdResponse,
+  WebUpdateCategoryResponse,
+} from "./response";
 
 @ApiTags("Categories")
 @Controller("/v1/categories")
@@ -41,11 +45,11 @@ export class CategoriesController {
   @ApiBearerAuth()
   @Roles([USER_ROLES.ADMIN])
   @ApiBody({ type: CreateCategoryDto })
-  @ApiOkResponse({ type: WebSuccessResponse<CreateCategoryResponse> })
+  @ApiOkResponse({ type: WebCreateCategoryResponse })
   @Post()
   async create(
     @Body() createCategoryDto: CreateCategoryDto,
-  ): Promise<WebSuccessResponse<CreateCategoryResponse>> {
+  ): Promise<WebCreateCategoryResponse> {
     this.validationService.validate(
       CategoryValidation.CREATE,
       createCategoryDto,
@@ -56,20 +60,18 @@ export class CategoriesController {
 
   @HttpCode(200)
   @Public()
-  @ApiOkResponse({ type: WebSuccessResponse<Category[]> })
+  @ApiOkResponse({ type: WebGetAllCategoriesResponse })
   @Get()
-  async getAll(): Promise<WebSuccessResponse<Category[]>> {
+  async getAll(): Promise<WebGetAllCategoriesResponse> {
     const res = await this.categoriesService.getAll();
     return this.responseService.success(200, res);
   }
 
   @HttpCode(200)
   @Public()
-  @ApiOkResponse({ type: WebSuccessResponse<Category> })
+  @ApiOkResponse({ type: WebGetCategoryByIdResponse })
   @Get(":id")
-  async getById(
-    @Param("id") id: string,
-  ): Promise<WebSuccessResponse<Category>> {
+  async getById(@Param("id") id: string): Promise<WebGetCategoryByIdResponse> {
     const res = await this.categoriesService.getById(id);
     return this.responseService.success(200, res);
   }
@@ -78,12 +80,12 @@ export class CategoriesController {
   @ApiBearerAuth()
   @Roles([USER_ROLES.ADMIN])
   @ApiBody({ type: OmitType(UpdateCategoryDto, ["id"]) })
-  @ApiOkResponse({ type: WebSuccessResponse<UpdateCategoryResponse> })
+  @ApiOkResponse({ type: WebUpdateCategoryResponse })
   @Patch(":id")
   async update(
     @Param("id") id: string,
     @Body() updateCategoryDto: UpdateCategoryDto,
-  ) {
+  ): Promise<WebUpdateCategoryResponse> {
     updateCategoryDto.id = id;
     this.validationService.validate(
       CategoryValidation.UPDATE,
@@ -96,7 +98,7 @@ export class CategoriesController {
   @HttpCode(200)
   @ApiBearerAuth()
   @Roles([USER_ROLES.ADMIN])
-  @ApiOkResponse({ type: WebSuccessResponse<string> })
+  @ApiOkResponse({ type: WebPayloadStringResponse })
   @Delete(":id")
   async delete(@Param("id") id: string) {
     const res = await this.categoriesService.delete(id);

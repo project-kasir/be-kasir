@@ -29,7 +29,9 @@ export class SuppliersService {
 
   async getAll(
     paginationReq: PaginationReq,
-  ): Promise<WithPagiation<Supplier[]>> {
+  ): Promise<
+    WithPagiation<Prisma.SupplierGetPayload<{ include: { brands: true } }>[]>
+  > {
     const skip = (paginationReq.page - 1) * paginationReq.size;
 
     const [payload, total] = await this.prismaService.$transaction([

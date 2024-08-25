@@ -1,4 +1,3 @@
-import { ValidationService } from "./../common/validation/validation.service";
 import {
   Controller,
   Get,
@@ -10,8 +9,6 @@ import {
   HttpCode,
   Query,
 } from "@nestjs/common";
-import { SuppliersService } from "./suppliers.service";
-import { CreateSupplierDto, UpdateSupplierDto } from "./dto";
 import {
   ApiBearerAuth,
   ApiBody,
@@ -20,15 +17,25 @@ import {
   ApiTags,
   OmitType,
 } from "@nestjs/swagger";
+
+import { SuppliersService } from "./suppliers.service";
+import { CreateSupplierDto, UpdateSupplierDto } from "./dto";
 import { Roles } from "../common/decorators/roles.decorator";
-import { PaginationReq, USER_ROLES, WithPagiation } from "../common/types";
+import { PaginationReq, USER_ROLES } from "../common/types";
 import { Public } from "../common/decorators/public.decorator";
 import { PaginationSchema } from "../common/zod";
 import { ResponseService } from "../common/response/response.service";
 import { SupplierValidation } from "./zod";
-import { WebSuccessResponse } from "src/common/response/base-response";
-import { CreateSupplierResponse, UpdateSupplierResponse } from "./response";
-import { Prisma, Supplier } from "@prisma/client";
+import { WebPayloadStringResponse } from "../common/response/base-response";
+import { ValidationService } from "../common/validation/validation.service";
+import {
+  WebGetAllSupplierResponse,
+  WebGetSupplierByIdResponse,
+} from "./response";
+import {
+  WebCreateCategoryResponse,
+  WebUpdateCategoryResponse,
+} from "../categories/response";
 
 @ApiTags("Suppliers")
 @Controller("/v1/suppliers")
@@ -43,11 +50,11 @@ export class SuppliersController {
   @ApiBearerAuth()
   @Roles([USER_ROLES.ADMIN])
   @ApiBody({ type: CreateSupplierDto })
-  @ApiOkResponse({ type: WebSuccessResponse<CreateSupplierResponse> })
+  @ApiOkResponse({ type: WebCreateCategoryResponse })
   @Post()
   async create(
     @Body() createSupplierDto: CreateSupplierDto,
-  ): Promise<WebSuccessResponse<CreateSupplierResponse>> {
+  ): Promise<WebCreateCategoryResponse> {
     this.validationService.validate(
       SupplierValidation.CREATE,
       createSupplierDto,
@@ -70,7 +77,7 @@ export class SuppliersController {
     required: false,
     allowReserved: true,
   })
-  @ApiOkResponse({ type: WebSuccessResponse<WithPagiation<Supplier[]>> })
+  @ApiOkResponse({ type: WebGetAllSupplierResponse })
   async getAll(@Query() pagination: PaginationReq) {
     const queryReq = this.validationService.validate(
       PaginationSchema,
@@ -84,13 +91,7 @@ export class SuppliersController {
   @HttpCode(200)
   @Public()
   @ApiOkResponse({
-    type: WebSuccessResponse<
-      Prisma.SupplierGetPayload<{
-        include: {
-          brands: true;
-        };
-      }>
-    >,
+    type: WebUpdateCategoryResponse,
   })
   @Get(":id")
   async getById(@Param("id") id: string) {
@@ -102,7 +103,7 @@ export class SuppliersController {
   @ApiBearerAuth()
   @Roles([USER_ROLES.ADMIN])
   @ApiBody({ type: OmitType(UpdateSupplierDto, ["id"]) })
-  @ApiOkResponse({ type: WebSuccessResponse<UpdateSupplierResponse> })
+  @ApiOkResponse({ type: WebGetSupplierByIdResponse })
   @Patch(":id")
   async update(
     @Param("id") id: string,
@@ -120,7 +121,7 @@ export class SuppliersController {
   @HttpCode(200)
   @ApiBearerAuth()
   @Roles([USER_ROLES.ADMIN])
-  @ApiOkResponse({ type: WebSuccessResponse<string> })
+  @ApiOkResponse({ type: WebPayloadStringResponse })
   @Delete(":id")
   async remove(@Param("id") id: string) {
     const res = await this.suppliersService.delete(id);

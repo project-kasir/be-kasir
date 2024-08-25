@@ -1,6 +1,7 @@
 import { z } from "zod";
-import { PaginationSchema } from "../zod";
 import { ApiProperty } from "@nestjs/swagger";
+
+import { PaginationSchema } from "../zod";
 
 export class PaginationResponse {
   @ApiProperty({ type: Number, default: 1 })
