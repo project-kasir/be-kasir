@@ -29,13 +29,11 @@ import { SupplierValidation } from "./zod";
 import { WebPayloadStringResponse } from "../common/response/base-response";
 import { ValidationService } from "../common/validation/validation.service";
 import {
+  WebCreateSupplierResponse,
   WebGetAllSupplierResponse,
   WebGetSupplierByIdResponse,
+  WebUpdateSupplierResponse,
 } from "./response";
-import {
-  WebCreateCategoryResponse,
-  WebUpdateCategoryResponse,
-} from "../categories/response";
 
 @ApiTags("Suppliers")
 @Controller("/v1/suppliers")
@@ -50,11 +48,11 @@ export class SuppliersController {
   @ApiBearerAuth()
   @Roles([USER_ROLES.ADMIN])
   @ApiBody({ type: CreateSupplierDto })
-  @ApiOkResponse({ type: WebCreateCategoryResponse })
+  @ApiOkResponse({ type: WebCreateSupplierResponse })
   @Post()
   async create(
     @Body() createSupplierDto: CreateSupplierDto,
-  ): Promise<WebCreateCategoryResponse> {
+  ): Promise<WebCreateSupplierResponse> {
     this.validationService.validate(
       SupplierValidation.CREATE,
       createSupplierDto,
@@ -91,7 +89,7 @@ export class SuppliersController {
   @HttpCode(200)
   @Public()
   @ApiOkResponse({
-    type: WebUpdateCategoryResponse,
+    type: WebUpdateSupplierResponse,
   })
   @Get(":id")
   async getById(@Param("id") id: string) {
