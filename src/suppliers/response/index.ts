@@ -1,9 +1,10 @@
 import { ApiProperty } from "@nestjs/swagger";
+
 import {
   WebPaginationResponse,
   WebSuccessResponse,
 } from "../../common/response/base-response";
-import { SupplierDto } from "../dto";
+import { SupplierEntity } from "../entity";
 
 export class CreateSupplierResponse {
   @ApiProperty({ type: String })
@@ -29,13 +30,13 @@ export class WebUpdateSupplierResponse extends WebSuccessResponse<UpdateSupplier
 }
 
 export class WebGetAllSupplierResponse extends WebPaginationResponse<
-  SupplierDto[]
+  SupplierEntity[]
 > {
-  @ApiProperty({ type: [SupplierDto] })
-  payload!: SupplierDto[];
+  @ApiProperty({ type: [SupplierEntity] })
+  payload!: SupplierEntity[];
 }
 
-export class WebGetSupplierByIdResponse extends WebSuccessResponse<SupplierDto> {
-  @ApiProperty({ type: SupplierDto })
-  payload!: SupplierDto;
+export class WebGetSupplierByIdResponse extends WebSuccessResponse<SupplierEntity> {
+  @ApiProperty({ type: SupplierEntity })
+  payload!: SupplierEntity;
 }

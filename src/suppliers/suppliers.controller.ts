@@ -101,8 +101,8 @@ export class SuppliersController {
   @Get()
   async getAll(@Query() pagination: PaginationReq) {
     const queryReq = this.validationService.validate(PaginationSchema, {
-      limit: +pagination.limit,
-      page: +pagination.page,
+      limit: +pagination.limit || 10,
+      page: +pagination.page || 1,
     }) as PaginationReq;
 
     const res = await this.suppliersService.getAll(queryReq);

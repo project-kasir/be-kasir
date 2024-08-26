@@ -28,9 +28,11 @@ model User {
 }
 
 model Category {
-  id        String  @id @default(cuid())
-  parent_id String?
-  name      String  @unique
+  id         String   @id @default(cuid())
+  parent_id  String?
+  name       String   @unique
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now()) @updatedAt
 
   parent_category Category? @relation("CategoryToParent", fields: [parent_id], references: [id], onUpdate: Cascade, onDelete: Restrict)
 
@@ -40,9 +42,12 @@ model Category {
 }
 
 model Supplier {
-  id     String  @id @default(cuid())
-  name   String  @unique
-  phone  String  @db.VarChar(14)
+  id         String   @id @default(cuid())
+  name       String   @unique
+  phone      String   @db.VarChar(14)
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now()) @updatedAt
+
   brands Brand[]
 
   @@map("suppliers")
@@ -52,7 +57,10 @@ model Brand {
   id          String   @id @default(cuid())
   name        String
   supplier_id String
-  supplier    Supplier @relation(fields: [supplier_id], references: [id])
+  created_at  DateTime @default(now())
+  updated_at  DateTime @default(now()) @updatedAt
+
+  supplier Supplier @relation(fields: [supplier_id], references: [id])
 
   @@map("brands")
 }
