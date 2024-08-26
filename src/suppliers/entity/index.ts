@@ -1,4 +1,5 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty, OmitType } from "@nestjs/swagger";
+import { BrandEntity } from "src/brands/entity";
 
 export class SupplierEntity {
   @ApiProperty({ type: String })
@@ -15,4 +16,7 @@ export class SupplierEntity {
 
   @ApiProperty({ type: Date })
   updated_at!: Date;
+
+  @ApiProperty({ type: [OmitType(BrandEntity, ["supplier_id"])] })
+  brands?: Omit<BrandEntity, "supplier_id">[];
 }

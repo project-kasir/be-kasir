@@ -1,24 +1,20 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { SupplierValidation } from "../zod";
-import { z } from "zod";
 
-export class CreateSupplierDto {
+export class CreateBrandDto {
+  @ApiProperty({ type: String, required: true })
+  supplier_id!: string;
+
   @ApiProperty({ type: String, required: true })
   name!: string;
-
-  @ApiProperty({ type: String, required: true })
-  phone!: string;
 }
 
-export class UpdateSupplierDto {
+export class UpdateBrandDto {
   @ApiProperty({ type: Number, required: true })
   id!: string;
 
   @ApiProperty({ type: String, required: false })
-  name?: string;
+  supplier_id?: string;
 
   @ApiProperty({ type: String, required: false })
-  phone?: string;
+  name?: string;
 }
-
-export type SupplierQueryDto = z.infer<typeof SupplierValidation.QUERY>;

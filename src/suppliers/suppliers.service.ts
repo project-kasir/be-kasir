@@ -3,10 +3,10 @@ import { Prisma, Supplier } from "@prisma/client";
 import { Inject, Injectable } from "@nestjs/common";
 import { WINSTON_MODULE_PROVIDER } from "nest-winston";
 
-import { CreateSupplierDto, UpdateSupplierDto } from "./dto";
+import { CreateSupplierDto, SupplierQueryDto, UpdateSupplierDto } from "./dto";
 import { PrismaService } from "../common/prisma/prisma.service";
-import { PaginationReq, WithPagiation } from "../common/types";
-import { CreateSupplierResponse, UpdateSupplierResponse } from "./response";
+import { WithPagiation } from "../common/types";
+import { SupplierEntity } from "./entity";
 
 @Injectable()
 export class SuppliersService {
@@ -15,9 +15,7 @@ export class SuppliersService {
     private readonly prismaService: PrismaService,
   ) {}
 
-  async create(
-    createSupplierDto: CreateSupplierDto,
-  ): Promise<CreateSupplierResponse> {
+  async create(createSupplierDto: CreateSupplierDto): Promise<SupplierEntity> {
     const supplier = await this.prismaService.supplier.create({
       data: createSupplierDto,
     });
@@ -28,51 +26,70 @@ export class SuppliersService {
   }
 
   async getAll(
-    paginationReq: PaginationReq,
-  ): Promise<
-    WithPagiation<Prisma.SupplierGetPayload<{ include: { brands: true } }>[]>
-  > {
-    const skip = (paginationReq.page - 1) * paginationReq.limit;
+    queryReq: SupplierQueryDto,
+  ): Promise<WithPagiation<SupplierEntity[]>> {
+    const skip = (queryReq.page - 1) * queryReq.limit;
+
+    const filter: Prisma.SupplierWhereInput = {};
+
+    if (queryReq.name) {
+      filter.name = {
+        search: decodeURI(queryReq.name),
+      };
+    }
 
     const [payload, total] = await this.prismaService.$transaction([
       this.prismaService.supplier.findMany({
         include: {
-          brands: true,
+          brands: {
+            select: {
+              id: true,
+              name: true,
+              created_at: true,
+              updated_at: true,
+            },
+          },
         },
         orderBy: {
-          name: "asc",
+          created_at: "desc",
         },
-        take: paginationReq.limit,
+        where: filter,
+        take: queryReq.limit,
         skip,
       }),
-      this.prismaService.supplier.count(),
+      this.prismaService.supplier.count({
+        where: filter,
+      }),
     ]);
 
     return {
       payload,
       meta: {
-        page: paginationReq.page,
-        limit: paginationReq.limit,
+        page: queryReq.page,
+        limit: queryReq.limit,
         total_data: total,
-        total_page: Math.ceil(total / paginationReq.limit),
+        total_page: Math.ceil(total / queryReq.limit),
       },
     };
   }
 
-  async getById(
-    id: string,
-  ): Promise<Prisma.SupplierGetPayload<{ include: { brands: true } }> | null> {
+  async getById(id: string): Promise<SupplierEntity | null> {
     return this.prismaService.supplier.findUnique({
       where: { id },
       include: {
-        brands: true,
+        brands: {
+          select: {
+            id: true,
+            name: true,
+            created_at: true,
+            updated_at: true,
+          },
+        },
       },
     });
   }
 
-  async update(
-    updateSupplierDto: UpdateSupplierDto,
-  ): Promise<UpdateSupplierResponse> {
+  async update(updateSupplierDto: UpdateSupplierDto): Promise<SupplierEntity> {
     const updateData: Partial<Supplier> = {};
 
     if (updateSupplierDto.name) {

@@ -1,11 +1,25 @@
-import { Injectable } from "@nestjs/common";
-import { CreateBrandDto } from "./dto/create-brand.dto";
-import { UpdateBrandDto } from "./dto/update-brand.dto";
+import { Logger } from "winston";
+import { Inject, Injectable } from "@nestjs/common";
+import { WINSTON_MODULE_PROVIDER } from "nest-winston";
+import { PrismaService } from "src/common/prisma/prisma.service";
+import { CreateBrandDto, UpdateBrandDto } from "./dto";
+import { BrandEntity } from "./entity";
 
 @Injectable()
 export class BrandsService {
-  create(createBrandDto: CreateBrandDto) {
-    return "This action adds a new brand";
+  constructor(
+    @Inject(WINSTON_MODULE_PROVIDER) private logger: Logger,
+    private readonly prismaService: PrismaService,
+  ) {}
+
+  async create(createBrandDto: CreateBrandDto): Promise<BrandEntity> {
+    const brand = await this.prismaService.brand.create({
+      data: createBrandDto,
+    });
+
+    this.logger.info(`Brand ${createBrandDto.name} created successfully`);
+
+    return brand;
   }
 
   findAll() {

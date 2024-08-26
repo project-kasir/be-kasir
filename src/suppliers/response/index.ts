@@ -6,27 +6,14 @@ import {
 } from "../../common/response/base-response";
 import { SupplierEntity } from "../entity";
 
-export class CreateSupplierResponse {
-  @ApiProperty({ type: String })
-  id!: string;
-
-  @ApiProperty({ type: String })
-  name!: string;
-
-  @ApiProperty({ type: String })
-  phone!: string;
+export class WebCreateSupplierResponse extends WebSuccessResponse<SupplierEntity> {
+  @ApiProperty({ type: SupplierEntity })
+  payload!: SupplierEntity;
 }
 
-export class UpdateSupplierResponse extends CreateSupplierResponse {}
-
-export class WebCreateSupplierResponse extends WebSuccessResponse<CreateSupplierResponse> {
-  @ApiProperty({ type: CreateSupplierResponse })
-  payload!: CreateSupplierResponse;
-}
-
-export class WebUpdateSupplierResponse extends WebSuccessResponse<UpdateSupplierResponse> {
-  @ApiProperty({ type: UpdateSupplierResponse })
-  payload!: UpdateSupplierResponse;
+export class WebUpdateSupplierResponse extends WebSuccessResponse<SupplierEntity> {
+  @ApiProperty({ type: SupplierEntity })
+  payload!: SupplierEntity;
 }
 
 export class WebGetAllSupplierResponse extends WebPaginationResponse<

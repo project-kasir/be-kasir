@@ -24,10 +24,9 @@ import {
 } from "@nestjs/swagger";
 
 import { SuppliersService } from "./suppliers.service";
-import { CreateSupplierDto, UpdateSupplierDto } from "./dto";
+import { CreateSupplierDto, SupplierQueryDto, UpdateSupplierDto } from "./dto";
 import { Roles } from "../common/decorators/roles.decorator";
 import { PaginationReq, USER_ROLES } from "../common/types";
-import { PaginationSchema } from "../common/zod";
 import { ResponseService } from "../common/response/response.service";
 import { SupplierValidation } from "./zod";
 import {
@@ -93,16 +92,23 @@ export class SuppliersController {
     required: false,
     allowReserved: true,
   })
+  @ApiQuery({
+    name: "name",
+    type: String,
+    required: false,
+    allowReserved: true,
+  })
   @ApiOkResponse({ type: WebGetAllSupplierResponse })
   @ApiBadRequestResponse({ type: WebBadRequestErrorResponse })
   @ApiUnauthorizedResponse({ type: WebUnauthorizedErrorResponse })
   @ApiForbiddenResponse({ type: WebForbiddenErrorResponse })
   @ApiInternalServerErrorResponse({ type: WebInternalServerErrorResponse })
   @Get()
-  async getAll(@Query() pagination: PaginationReq) {
-    const queryReq = this.validationService.validate(PaginationSchema, {
-      limit: +pagination.limit || 10,
-      page: +pagination.page || 1,
+  async getAll(@Query() query: SupplierQueryDto) {
+    const queryReq = this.validationService.validate(SupplierValidation.QUERY, {
+      limit: +query.limit || 10,
+      page: +query.page || 1,
+      name: query.name,
     }) as PaginationReq;
 
     const res = await this.suppliersService.getAll(queryReq);

@@ -54,8 +54,7 @@ export class ErrorFilter implements ExceptionFilter {
         code: 400,
       },
       P2003: {
-        errors:
-          "Cannot delete or update a parent row: a foreign key constraint fails",
+        errors: "Error: a foreign key constraint fails",
         code: 400,
       },
     };

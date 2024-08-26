@@ -3,7 +3,7 @@ import { z } from "zod";
 export class CategoryValidation {
   static CREATE = z.object({
     parent_id: z.string().optional(),
-    name: z.string().min(1, "Name is required"),
+    name: z.string().min(1),
   });
 
   static UPDATE = this.CREATE.extend({
