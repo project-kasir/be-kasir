@@ -32,7 +32,7 @@ export class SuppliersService {
   ): Promise<
     WithPagiation<Prisma.SupplierGetPayload<{ include: { brands: true } }>[]>
   > {
-    const skip = (paginationReq.page - 1) * paginationReq.size;
+    const skip = (paginationReq.page - 1) * paginationReq.limit;
 
     const [payload, total] = await this.prismaService.$transaction([
       this.prismaService.supplier.findMany({
@@ -42,7 +42,7 @@ export class SuppliersService {
         orderBy: {
           name: "asc",
         },
-        take: paginationReq.size,
+        take: paginationReq.limit,
         skip,
       }),
       this.prismaService.supplier.count(),
@@ -51,9 +51,10 @@ export class SuppliersService {
     return {
       payload,
       meta: {
-        current_page: paginationReq.page,
-        size: paginationReq.size,
-        total_page: Math.ceil(total / paginationReq.size),
+        page: paginationReq.page,
+        limit: paginationReq.limit,
+        total_data: total,
+        total_page: Math.ceil(total / paginationReq.limit),
       },
     };
   }

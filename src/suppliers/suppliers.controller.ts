@@ -82,12 +82,14 @@ export class SuppliersController {
   @ApiQuery({
     name: "page",
     type: Number,
+    example: 1,
     required: false,
     allowReserved: true,
   })
   @ApiQuery({
-    name: "size",
+    name: "limit",
     type: Number,
+    example: 10,
     required: false,
     allowReserved: true,
   })
@@ -98,10 +100,10 @@ export class SuppliersController {
   @ApiInternalServerErrorResponse({ type: WebInternalServerErrorResponse })
   @Get()
   async getAll(@Query() pagination: PaginationReq) {
-    const queryReq = this.validationService.validate(
-      PaginationSchema,
-      pagination,
-    ) as PaginationReq;
+    const queryReq = this.validationService.validate(PaginationSchema, {
+      limit: +pagination.limit,
+      page: +pagination.page,
+    }) as PaginationReq;
 
     const res = await this.suppliersService.getAll(queryReq);
     return this.responseService.pagination(200, res.payload, res.meta);

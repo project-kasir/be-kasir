@@ -5,10 +5,13 @@ import { PaginationSchema } from "../zod";
 
 export class PaginationResponse {
   @ApiProperty({ type: Number, default: 1 })
-  current_page!: number;
+  page!: number;
 
   @ApiProperty({ type: Number, default: 10 })
-  size!: number;
+  limit!: number;
+
+  @ApiProperty({ type: Number, default: 1 })
+  total_data!: number;
 
   @ApiProperty({ type: Number, default: 1 })
   total_page!: number;
