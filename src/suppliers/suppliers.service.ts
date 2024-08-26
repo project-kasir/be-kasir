@@ -1,6 +1,6 @@
 import { Logger } from "winston";
 import { Prisma, Supplier } from "@prisma/client";
-import { Inject, Injectable, NotFoundException } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { WINSTON_MODULE_PROVIDER } from "nest-winston";
 
 import { CreateSupplierDto, UpdateSupplierDto } from "./dto";
@@ -72,10 +72,6 @@ export class SuppliersService {
   async update(
     updateSupplierDto: UpdateSupplierDto,
   ): Promise<UpdateSupplierResponse> {
-    const existingSupplier = (await this.getById(
-      updateSupplierDto.id,
-    )) as Supplier;
-
     const updateData: Partial<Supplier> = {};
 
     if (updateSupplierDto.name) {
@@ -86,23 +82,17 @@ export class SuppliersService {
       updateData.phone = updateSupplierDto.phone;
     }
 
-    this.logger.info(`Update Supplier: ${existingSupplier.name}`);
-
     const updatedSupplier = await this.prismaService.supplier.update({
-      where: { id: existingSupplier.id },
+      where: { id: updateSupplierDto.id },
       data: updateData,
     });
+
+    this.logger.info(`Update Supplier: ${updateSupplierDto.id}`);
 
     return updatedSupplier;
   }
 
   async delete(id: string): Promise<string> {
-    const supplier = await this.getById(id);
-
-    if (!supplier) {
-      throw new NotFoundException(`Supplier with id ${id} not found`);
-    }
-
     await this.prismaService.supplier.delete({
       where: { id },
     });

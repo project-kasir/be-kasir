@@ -1,7 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 
 import { WebSuccessResponse } from "../../common/response/base-response";
-import { CategoryDto } from "../dto";
+import { CategoryDto, CategoryNestedDto } from "../dto";
 
 export class CreateCategoryResponse {
   @ApiProperty({ type: String })
@@ -26,11 +26,18 @@ export class WebUpdateCategoryResponse extends WebSuccessResponse<UpdateCategory
   payload!: UpdateCategoryResponse;
 }
 
-export class WebGetAllCategoriesResponse extends WebSuccessResponse<
+export class WebGetAllCategoryResponse extends WebSuccessResponse<
   CategoryDto[]
 > {
   @ApiProperty({ type: [CategoryDto] })
   payload!: CategoryDto[];
+}
+
+export class WebGetCategoryNestedResponse extends WebSuccessResponse<
+  CategoryNestedDto[]
+> {
+  @ApiProperty({ type: [CategoryNestedDto] })
+  payload!: CategoryNestedDto[];
 }
 
 export class WebGetCategoryByIdResponse extends WebSuccessResponse<CategoryDto> {

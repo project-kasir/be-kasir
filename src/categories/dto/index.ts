@@ -11,6 +11,11 @@ export class CategoryDto {
   name!: string;
 }
 
+export class CategoryNestedDto extends CategoryDto {
+  @ApiProperty({ type: [CategoryDto] })
+  sub_category?: CategoryDto[];
+}
+
 export class CreateCategoryDto {
   @ApiProperty({ type: String })
   parent_id!: string;

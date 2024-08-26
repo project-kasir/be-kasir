@@ -7,16 +7,16 @@ export class SupplierDto {
   @ApiProperty({ type: String })
   name!: string;
 
-  @ApiProperty({ type: Number })
-  phone!: number;
+  @ApiProperty({ type: String })
+  phone!: string;
 }
 
 export class CreateSupplierDto {
   @ApiProperty({ type: String, required: true })
   name!: string;
 
-  @ApiProperty({ type: Number, required: true })
-  phone!: number;
+  @ApiProperty({ type: String, required: true })
+  phone!: string;
 }
 
 export class UpdateSupplierDto {
@@ -26,6 +26,6 @@ export class UpdateSupplierDto {
   @ApiProperty({ type: String, required: false })
   name?: string;
 
-  @ApiProperty({ type: Number, required: false })
-  phone?: number;
+  @ApiProperty({ type: String, required: false })
+  phone?: string;
 }

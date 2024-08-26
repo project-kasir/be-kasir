@@ -43,7 +43,7 @@ model Category {
 model Supplier {
   id     String  @id @default(cuid())
   name   String  @unique
-  phone  Int
+  phone  String  @db.VarChar(14)
   brands Brand[]
 
   @@map("suppliers")

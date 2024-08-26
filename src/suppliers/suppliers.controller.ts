@@ -10,11 +10,16 @@ import {
   Query,
 } from "@nestjs/common";
 import {
+  ApiBadRequestResponse,
   ApiBearerAuth,
   ApiBody,
+  ApiForbiddenResponse,
+  ApiInternalServerErrorResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiQuery,
   ApiTags,
+  ApiUnauthorizedResponse,
   OmitType,
 } from "@nestjs/swagger";
 
@@ -22,11 +27,17 @@ import { SuppliersService } from "./suppliers.service";
 import { CreateSupplierDto, UpdateSupplierDto } from "./dto";
 import { Roles } from "../common/decorators/roles.decorator";
 import { PaginationReq, USER_ROLES } from "../common/types";
-import { Public } from "../common/decorators/public.decorator";
 import { PaginationSchema } from "../common/zod";
 import { ResponseService } from "../common/response/response.service";
 import { SupplierValidation } from "./zod";
-import { WebPayloadStringResponse } from "../common/response/base-response";
+import {
+  WebBadRequestErrorResponse,
+  WebForbiddenErrorResponse,
+  WebInternalServerErrorResponse,
+  WebNotFoundErrorResponse,
+  WebPayloadStringResponse,
+  WebUnauthorizedErrorResponse,
+} from "../common/response/base-response";
 import { ValidationService } from "../common/validation/validation.service";
 import {
   WebCreateSupplierResponse,
@@ -49,6 +60,10 @@ export class SuppliersController {
   @Roles([USER_ROLES.ADMIN])
   @ApiBody({ type: CreateSupplierDto })
   @ApiOkResponse({ type: WebCreateSupplierResponse })
+  @ApiBadRequestResponse({ type: WebBadRequestErrorResponse })
+  @ApiUnauthorizedResponse({ type: WebUnauthorizedErrorResponse })
+  @ApiForbiddenResponse({ type: WebForbiddenErrorResponse })
+  @ApiInternalServerErrorResponse({ type: WebInternalServerErrorResponse })
   @Post()
   async create(
     @Body() createSupplierDto: CreateSupplierDto,
@@ -62,7 +77,8 @@ export class SuppliersController {
   }
 
   @HttpCode(200)
-  @Public()
+  @ApiBearerAuth()
+  @Roles([USER_ROLES.ADMIN])
   @ApiQuery({
     name: "page",
     type: Number,
@@ -76,6 +92,10 @@ export class SuppliersController {
     allowReserved: true,
   })
   @ApiOkResponse({ type: WebGetAllSupplierResponse })
+  @ApiBadRequestResponse({ type: WebBadRequestErrorResponse })
+  @ApiUnauthorizedResponse({ type: WebUnauthorizedErrorResponse })
+  @ApiForbiddenResponse({ type: WebForbiddenErrorResponse })
+  @ApiInternalServerErrorResponse({ type: WebInternalServerErrorResponse })
   async getAll(@Query() pagination: PaginationReq) {
     const queryReq = this.validationService.validate(
       PaginationSchema,
@@ -87,10 +107,13 @@ export class SuppliersController {
   }
 
   @HttpCode(200)
-  @Public()
-  @ApiOkResponse({
-    type: WebUpdateSupplierResponse,
-  })
+  @ApiBearerAuth()
+  @Roles([USER_ROLES.ADMIN])
+  @ApiOkResponse({ type: WebGetSupplierByIdResponse })
+  @ApiUnauthorizedResponse({ type: WebUnauthorizedErrorResponse })
+  @ApiForbiddenResponse({ type: WebForbiddenErrorResponse })
+  @ApiNotFoundResponse({ type: WebNotFoundErrorResponse })
+  @ApiInternalServerErrorResponse({ type: WebInternalServerErrorResponse })
   @Get(":id")
   async getById(@Param("id") id: string) {
     const res = await this.suppliersService.getById(id);
@@ -101,7 +124,12 @@ export class SuppliersController {
   @ApiBearerAuth()
   @Roles([USER_ROLES.ADMIN])
   @ApiBody({ type: OmitType(UpdateSupplierDto, ["id"]) })
-  @ApiOkResponse({ type: WebGetSupplierByIdResponse })
+  @ApiOkResponse({ type: WebUpdateSupplierResponse })
+  @ApiBadRequestResponse({ type: WebBadRequestErrorResponse })
+  @ApiUnauthorizedResponse({ type: WebUnauthorizedErrorResponse })
+  @ApiForbiddenResponse({ type: WebForbiddenErrorResponse })
+  @ApiNotFoundResponse({ type: WebNotFoundErrorResponse })
+  @ApiInternalServerErrorResponse({ type: WebInternalServerErrorResponse })
   @Patch(":id")
   async update(
     @Param("id") id: string,
@@ -120,6 +148,10 @@ export class SuppliersController {
   @ApiBearerAuth()
   @Roles([USER_ROLES.ADMIN])
   @ApiOkResponse({ type: WebPayloadStringResponse })
+  @ApiUnauthorizedResponse({ type: WebUnauthorizedErrorResponse })
+  @ApiForbiddenResponse({ type: WebForbiddenErrorResponse })
+  @ApiNotFoundResponse({ type: WebNotFoundErrorResponse })
+  @ApiInternalServerErrorResponse({ type: WebInternalServerErrorResponse })
   @Delete(":id")
   async remove(@Param("id") id: string) {
     const res = await this.suppliersService.delete(id);

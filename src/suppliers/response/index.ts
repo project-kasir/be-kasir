@@ -12,8 +12,8 @@ export class CreateSupplierResponse {
   @ApiProperty({ type: String })
   name!: string;
 
-  @ApiProperty({ type: Number })
-  phone!: number;
+  @ApiProperty({ type: String })
+  phone!: string;
 }
 
 export class UpdateSupplierResponse extends CreateSupplierResponse {}
