@@ -30,7 +30,7 @@ export class ErrorFilter implements ExceptionFilter {
       default:
         response.status(500).json({
           errors: exception.response.message || "Internal server error",
-          code: exception.response.statusCode || 500,
+          code: exception.code || 500,
         });
     }
   }
@@ -40,6 +40,10 @@ export class ErrorFilter implements ExceptionFilter {
     response: Response,
   ) {
     const prismaErrorResponseMap = {
+      "42P05": {
+        errors: "Internal server error",
+        code: 500,
+      },
       P2025: {
         errors: "Not found",
         code: 404,
