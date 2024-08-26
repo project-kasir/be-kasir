@@ -30,7 +30,7 @@ export class ErrorFilter implements ExceptionFilter {
       default:
         response.status(500).json({
           errors: exception.response.message || "Internal server error",
-          code: exception.code || 500,
+          code: exception.code || exception.response.statusCode || 500,
         });
     }
   }

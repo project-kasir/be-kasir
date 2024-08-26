@@ -96,6 +96,7 @@ export class SuppliersController {
   @ApiUnauthorizedResponse({ type: WebUnauthorizedErrorResponse })
   @ApiForbiddenResponse({ type: WebForbiddenErrorResponse })
   @ApiInternalServerErrorResponse({ type: WebInternalServerErrorResponse })
+  @Get()
   async getAll(@Query() pagination: PaginationReq) {
     const queryReq = this.validationService.validate(
       PaginationSchema,
