@@ -24,6 +24,16 @@ async function bootstrap() {
     swaggerOptions: { defaultModelsExpandDepth: -1 },
   });
 
+  app.enableCors({
+    origin: [
+      "http://localhost:3000",
+      "https://fe-kasir.vercel.app",
+      "https://www.fe-kasir.vercel.app",
+    ],
+    methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
+    credentials: true,
+  });
+
   app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
   app.enableShutdownHooks();
   await app.listen(app.get(ConfigService).get("SERVER_PORT") ?? 3000);
