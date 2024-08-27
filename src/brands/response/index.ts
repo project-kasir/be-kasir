@@ -16,14 +16,14 @@ export class WebUpdateBrandResponse extends WebSuccessResponse<BrandEntity> {
   payload!: BrandEntity;
 }
 
-export class WebGetAllSupplierResponse extends WebPaginationResponse<
+export class WebGetAllBrandResponse extends WebPaginationResponse<
   BrandEntity[]
 > {
   @ApiProperty({ type: [BrandEntity] })
   payload!: BrandEntity[];
 }
 
-export class WebGetSupplierByIdResponse extends WebSuccessResponse<BrandEntity> {
+export class WebGetBrandByIdResponse extends WebSuccessResponse<BrandEntity> {
   @ApiProperty({ type: BrandEntity })
   payload!: BrandEntity;
 }

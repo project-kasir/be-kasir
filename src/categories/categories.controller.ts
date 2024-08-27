@@ -66,11 +66,11 @@ export class CategoriesController {
   async create(
     @Body() createCategoryDto: CreateCategoryDto,
   ): Promise<WebCreateCategoryResponse> {
-    this.validationService.validate(
+    const createReq = this.validationService.validate(
       CategoryValidation.CREATE,
       createCategoryDto,
     );
-    const res = await this.categoriesService.create(createCategoryDto);
+    const res = await this.categoriesService.create(createReq);
     return this.responseService.success(201, res);
   }
 
@@ -128,11 +128,11 @@ export class CategoriesController {
     @Body() updateCategoryDto: UpdateCategoryDto,
   ): Promise<WebUpdateCategoryResponse> {
     updateCategoryDto.id = id;
-    this.validationService.validate(
+    const updateReq = this.validationService.validate(
       CategoryValidation.UPDATE,
       updateCategoryDto,
     );
-    const res = await this.categoriesService.update(updateCategoryDto);
+    const res = await this.categoriesService.update(updateReq);
     return this.responseService.success(200, res);
   }
 
