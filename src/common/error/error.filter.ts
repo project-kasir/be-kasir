@@ -49,13 +49,12 @@ export class ErrorFilter implements ExceptionFilter {
         code: 404,
       },
       P2002: {
-        errors:
-          "There is a unique constraint violation, a new row cannot be created in the database",
+        errors: "Some field is already exist",
         code: 400,
       },
       P2003: {
-        errors: "Error: a foreign key constraint fails",
-        code: 400,
+        errors: "Relation not found",
+        code: 404,
       },
     };
 

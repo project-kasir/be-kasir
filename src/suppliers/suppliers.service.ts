@@ -26,15 +26,15 @@ export class SuppliersService {
   }
 
   async getAll(
-    queryReq: SupplierQueryDto,
+    queryDto: SupplierQueryDto,
   ): Promise<WithPagiation<SupplierEntity[]>> {
-    const skip = (queryReq.page - 1) * queryReq.limit;
+    const skip = (queryDto.page - 1) * queryDto.limit;
 
     const filter: Prisma.SupplierWhereInput = {};
 
-    if (queryReq.name) {
+    if (queryDto.name) {
       filter.name = {
-        search: decodeURI(queryReq.name),
+        search: decodeURI(queryDto.name),
       };
     }
 
@@ -54,7 +54,7 @@ export class SuppliersService {
           created_at: "desc",
         },
         where: filter,
-        take: queryReq.limit,
+        take: queryDto.limit,
         skip,
       }),
       this.prismaService.supplier.count({
@@ -65,16 +65,16 @@ export class SuppliersService {
     return {
       payload,
       meta: {
-        page: queryReq.page,
-        limit: queryReq.limit,
+        page: queryDto.page,
+        limit: queryDto.limit,
         total_data: total,
-        total_page: Math.ceil(total / queryReq.limit),
+        total_page: Math.ceil(total / queryDto.limit),
       },
     };
   }
 
-  async getById(id: string): Promise<SupplierEntity | null> {
-    return this.prismaService.supplier.findUnique({
+  async getById(id: string): Promise<SupplierEntity> {
+    return this.prismaService.supplier.findUniqueOrThrow({
       where: { id },
       include: {
         brands: {

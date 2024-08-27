@@ -26,7 +26,7 @@ import {
 import { SuppliersService } from "./suppliers.service";
 import { CreateSupplierDto, SupplierQueryDto, UpdateSupplierDto } from "./dto";
 import { Roles } from "../common/decorators/roles.decorator";
-import { PaginationReq, USER_ROLES } from "../common/types";
+import { USER_ROLES } from "../common/types";
 import { ResponseService } from "../common/response/response.service";
 import { SupplierValidation } from "./zod";
 import {
@@ -67,11 +67,11 @@ export class SuppliersController {
   async create(
     @Body() createSupplierDto: CreateSupplierDto,
   ): Promise<WebCreateSupplierResponse> {
-    this.validationService.validate(
+    const createReq = this.validationService.validate(
       SupplierValidation.CREATE,
       createSupplierDto,
     );
-    const res = await this.suppliersService.create(createSupplierDto);
+    const res = await this.suppliersService.create(createReq);
     return this.responseService.success(201, res);
   }
 
@@ -104,12 +104,14 @@ export class SuppliersController {
   @ApiForbiddenResponse({ type: WebForbiddenErrorResponse })
   @ApiInternalServerErrorResponse({ type: WebInternalServerErrorResponse })
   @Get()
-  async getAll(@Query() query: SupplierQueryDto) {
+  async getAll(
+    @Query() query: SupplierQueryDto,
+  ): Promise<WebGetAllSupplierResponse> {
     const queryReq = this.validationService.validate(SupplierValidation.QUERY, {
-      limit: +query.limit || 10,
-      page: +query.page || 1,
+      limit: +query.limit ?? 10,
+      page: +query.page ?? 1,
       name: query.name,
-    }) as PaginationReq;
+    }) as SupplierQueryDto;
 
     const res = await this.suppliersService.getAll(queryReq);
     return this.responseService.pagination(200, res.payload, res.meta);
@@ -124,7 +126,7 @@ export class SuppliersController {
   @ApiNotFoundResponse({ type: WebNotFoundErrorResponse })
   @ApiInternalServerErrorResponse({ type: WebInternalServerErrorResponse })
   @Get(":id")
-  async getById(@Param("id") id: string) {
+  async getById(@Param("id") id: string): Promise<WebGetSupplierByIdResponse> {
     const res = await this.suppliersService.getById(id);
     return this.responseService.success(200, res);
   }
@@ -143,13 +145,13 @@ export class SuppliersController {
   async update(
     @Param("id") id: string,
     @Body() updateSupplierDto: UpdateSupplierDto,
-  ) {
+  ): Promise<WebUpdateSupplierResponse> {
     updateSupplierDto.id = id;
-    this.validationService.validate(
+    const updateReq = this.validationService.validate(
       SupplierValidation.UPDATE,
       updateSupplierDto,
     );
-    const res = await this.suppliersService.update(updateSupplierDto);
+    const res = await this.suppliersService.update(updateReq);
     return this.responseService.success(200, res);
   }
 
@@ -162,7 +164,7 @@ export class SuppliersController {
   @ApiNotFoundResponse({ type: WebNotFoundErrorResponse })
   @ApiInternalServerErrorResponse({ type: WebInternalServerErrorResponse })
   @Delete(":id")
-  async remove(@Param("id") id: string) {
+  async remove(@Param("id") id: string): Promise<WebPayloadStringResponse> {
     const res = await this.suppliersService.delete(id);
     return this.responseService.success(200, res);
   }
